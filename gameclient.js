@@ -53,31 +53,31 @@ function newMonster(){
 
 // Update game objects
 function update(modifier) {
-	if (38 in meL.keysDown) { // Player holding up
+	if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
 		meL.y -= meL.speed * modifier;
 		}
-	if (40 in meL.keysDown) { // Player holding down
+	if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
 		meL.y += meL.speed * modifier;
 		}
-	if (37 in meL.keysDown) { // Player holding left
+	if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
 		meL.x -= meL.speed * modifier;
 		}
-	if (39 in meL.keysDown) { // Player holding right
+	if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
 		meL.x += meL.speed * modifier;
 		}
 
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
-		if (38 in player.keysDown) { // Player holding up
+		if ( 38 in player.keysDown || 87 in player.keysDown ) { // Player holding up
 			player.y -= player.speed * modifier;
 			}
-		if (40 in player.keysDown) { // Player holding down
+		if ( 40 in player.keysDown || 83 in player.keysDown ) { // Player holding down
 			player.y += player.speed * modifier;
 			}
-		if (37 in player.keysDown) { // Player holding left
+		if ( 37 in player.keysDown || 65 in player.keysDown ) { // Player holding left
 			player.x -= player.speed * modifier;
 			}
-		if (39 in player.keysDown) { // Player holding right
+		if ( 39 in player.keysDown || 68 in player.keysDown ) { // Player holding right
 			player.x += player.speed * modifier;
 			}
 		}

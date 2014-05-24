@@ -21,7 +21,7 @@ players:<br>
 <script>
 var socket = io.connect('http://pdxjohnny.tk:443');
 var game = new Object;
-var meL = new localPlayer( 0, "", 0, 0, "images/hero.png" );
+var meL = new localPlayer( 0, "", 0, 0, "images/shipblue.png" );
 var meS;
 game.playersL = [];
 game.playersS = [];

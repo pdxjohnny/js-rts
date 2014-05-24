@@ -1,4 +1,4 @@
-// Let’s make node/socketio listen on port 8000
+// Let’s make node/socketio listen on port 443
 var port = 443;
 var io = require('socket.io').listen( port );
 //var mysql = require("./mysql_functions.js");
@@ -32,6 +32,16 @@ io.sockets.on('connection', function(socket){
 
 	// Update player data
 	socket.on('update me', function( playerData ) {
+		playerData.aid = players.length;
+		var deleted = deletePlayer( socket.id, players );
+		if ( deleted ) players = deleted;
+		players.push(playerData);
+		socket.broadcast.emit('update player', playerData);
+		// io.sockets.emit('players', players);
+		});
+
+	// Send message
+	socket.on('personal message', function( message ) {
 		playerData.aid = players.length;
 		var deleted = deletePlayer( socket.id, players );
 		if ( deleted ) players = deleted;
