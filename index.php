@@ -2,33 +2,56 @@
 	<meta charset="utf-8">
 	<title>Game</title>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="http://pdxjohnny.tk:443/socket.io/socket.io.js"></script>
+	<script src="objectConversions.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
+<div style="position: absolute; left: 10px; top: 10px; width:200px; height:100px;">
+        <canvas id="gameWindow" ></canvas>
+</div>
 
-My id: <span id="myId"></span><br>
-Users connected: <span id="usersConnected"></span><br>
-<button onclick=" game.running = false; " >Pause</button>
-<button onclick=" game.running = true; " >Play</button>
-<form id="myUsername" action="" >
-	My Username: 
-	<input id="name" type="text" ></input>
+<div id="topLeft" style="position: absolute; z-index: 1; left: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;">
+
+<form id="login" action="" >
+	Username: <input id="name" type="text" ></input>
+	<br>
+<!--	Password: <input id="name" type="text" ></input>-->
 </form>
+
 players:<br>
-<div id="players" ></div> 
-<canvas id="gameWindow" ></canvas>
+<div id="players" ></div>
+
+</div><div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;">
+</div>
 
 <script>
-var socket = io.connect('http://pdxjohnny.tk:443');
+// Globals
 var game = new Object;
-var meL = new localPlayer( 0, "", 0, 0, "images/shipblue.png" );
-var meS;
 game.playersL = [];
 game.playersS = [];
+var meL = new localPlayer( 0, "", 0, 0, "images/shipblue.png" );
+var meS;
 
-$(document).ready(function(){
- 
+// Create the canvas
+var canvas = document.getElementById('gameWindow');
+var ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// No Scroll
+$("html").css("overflow", "hidden");
+$("html").css("background-color", "#2C2C2C");
+
+// Socket
+var socket = false;
+var socketId;
+$.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
+	.done(function( script, textStatus ) {
+		
+	socket = io.connect('http://pdxjohnny.tk:443');
+
+	$.getScript( "gameclient.js" );
+
 	// Display user count on page
 	socket.on('users connected', function(number){
 		$('#usersConnected').html(number);
@@ -52,7 +75,9 @@ $(document).ready(function(){
 			}
 		$('#players').html("");
 		for ( var i in players ){
-			$('#players').append( "User: " + players[i].username + " is at ("+players[i].x+","+players[i].y+")<br>" );
+			$('#players').append( "User: " + players[i].username + " is at ("
+				+Math.round(players[i].x)+","
+				+Math.round(players[i].y)+")<br>" );
 			}
 		});
  
@@ -64,13 +89,19 @@ $(document).ready(function(){
 			updatePlayerLocal( player );
 			$('#players').html("");
 			for ( var i in game.playersL ){
-				$('#players').append( "User: " + game.playersL[i].username + " is at ("+game.playersL[i].x+","+game.playersL[i].y+")<br>" );
+				$('#players').append( "User: " + game.playersL[i].username
+				+" is at ("+Math.round(game.playersL[i].x)+","
+				+Math.round(game.playersL[i].y)+")<br>" );
 				}
 			}
 		});
+
+		})
+	.fail(function( jqxhr, settings, exception ) {
+		socket = false;
 	});
 
-$('#myUsername').on("submit", function (e) {
+$('#login').on("submit", function (e) {
 	e.preventDefault();
 	meL.username = $('#name').val();
 	meL.Ready = false;
@@ -88,112 +119,4 @@ $('#myUsername').on("submit", function (e) {
 	return false;
 	});
 
-function localPlayer( id, username, x, y, image ){
-	this.id = id;
-	this.username = username;
-	this.x = x;
-	this.y = y;
-	this.pic = image;
-	this.speed = 256;
-	this.keysDown = {};
-	this.Ready = false;
-	this.Image = new Image();
-	this.Image.onload = function () {
-		this.Ready = true;
-		};
-	this.Image.src = this.pic;
-	}
-
-function serverPlayer( id, username, x, y, image ){
-	this.id = id;
-	this.username = username;
-	this.x = x;
-	this.y = y;
-	this.speed = 256;
-	this.pic = image;
-	}
-
-function LocaltoSever( local ){
-	this.id = local.id;
-	this.username = local.username;
-	this.x = local.x;
-	this.y = local.y;
-	this.speed = local.speed;
-	this.keysDown = {};
-	for ( var i in local.keysDown ) {
-		this.keysDown[i] = true;
-		}
-	this.pic = local.pic;
-	}
-
-function ServertoLocal( server ){
-	var local = new Object;
-	local.id = server.id;
-	local.username = server.username;
-	local.x = server.x;
-	local.y = server.y;
-	local.pic = server.pic;
-	local.speed = 256;
-	local.keysDown = server.keysDown;
-	local.Ready = false;
-	local.Image = new Image();
-	local.Image.onload = function () {
-		local.Ready = true;
-		};
-	local.Image.src = local.pic;
-	translate( local );
-	return local;
-	}
-
-function deletePlayer( sid, array ){
-	var idWasDeleted = false;
-	for ( var i = 0; i < array.length; i++ ){
-		if ( array[i].id === sid ) {
-			delete array[i];
-			idWasDeleted = true;
-			break;
-			}
-		}
-	if ( idWasDeleted ){
-		res = deleteUndefined( array );
-		res = fixPlayerIds( res );
-		return res;
-		}
-	else return false;
-	}
-
-function fixPlayerIds( array ){
-	var res = [];
-	for ( var i in array ){
-		array[i].aid = i;
-		res.push(array[i]);
-		}
-	return res;
-	}
-
-function deleteUndefined( array ){
-	var res = [];
-	for ( var i in array ){
-		if( typeof array[i] !== "undefined" ) res.push(array[i]);
-		}
-	return res;
-	}
-
-function updatePlayerLocal( player ){
-	var updated = false;
-	for ( var i in game.playersL ){
-		if ( game.playersL[i].id === player.id ) {
-			game.playersL[i] = player;
-			updated = true;
-			break;
-			}
-		}
-	if ( updated ) return true;
-	else {
-		game.playersL.push(player);
-		return false;
-		}
-	}
-
 </script>
-<script src="gameclient.js"></script>

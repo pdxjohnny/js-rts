@@ -1,9 +1,3 @@
-// Create the canvas
-var canvas = document.getElementById('gameWindow');
-var ctx = canvas.getContext("2d");
-canvas.width = 512;
-canvas.height = 480;
-
 // Background image
 var bg = new Object;
 bg.Ready = false;
@@ -11,7 +5,7 @@ bg.Image = new Image();
 bg.Image.onload = function () {
 	bg.Ready = true;
 	};
-bg.Image.src = "images/background.png";
+bg.Image.src = "images/stars1.png";
 bg.angle = function( angle ){
 	bg.Image.src = "images/background"+angle+".png";
 	}
@@ -120,23 +114,20 @@ function render() {
 	// Score
 	ctx.fillStyle = "rgb(250, 250, 250)";
 	ctx.font = "24px Helvetica";
-	ctx.textAlign = "left";
-	ctx.textBaseline = "top";
-	ctx.fillText("Monsters caught: " + monstersCaught, 32, 32);
+	//ctx.fillText("Monsters caught: " + monstersCaught, 32, 32);
 	ctx.font = "10px Helvetica";
 
 	if (bg.Ready) {
-/*		if ( angle != angleOf(meL) ){
-			angle = angleOf(meL);
-			bg.angle( angle );
-*/			ctx.drawImage(bg.Image, 0, 0);
-//			}
+		//ctx.rect(0, 0, canvas.width, canvas.height);
+		//ctx.fillStyle = ctx.createPattern(bg.Image, "repeat");
+		ctx.fillStyle="#2C2C2C";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		}
 
+	ctx.fillStyle = "white";
 	if (meL.Ready) {
-		//ctx.drawImage(meL.Image, canvas.width/2 , canvas.height/2 );
 		drawRotatedImage( meL.Image, canvas.width/2, canvas.height/2 , angleOf(meL) ); 
-		//ctx.fillText(meL.username, meL.x-5, meL.y-16);
+		ctx.fillText(meL.username, (canvas.width/2)-25, (canvas.height/2)-25);
 		}
 
 	if (monster.Ready) {
@@ -146,9 +137,8 @@ function render() {
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
 		if ( player.Ready ) {
-			//ctx.drawImage(player.Image, player.x, player.y);
 			drawRotatedImage( player.Image, player.x, player.y, angleOf(player) ); 
-			ctx.fillText(player.username, player.x-5, player.y-16);
+			ctx.fillText(player.username, player.x-25, player.y-25);
 			}	
 		}
 	};
@@ -177,12 +167,6 @@ game.main = function() {
 	requestAnimationFrame( game.main );
 	};
 
-// Turns server cordinates into local cordinates
-function translate( object ) {
-	object.x = canvas.width/2 - ( meL.x - object.x );
-	object.y = canvas.height/2 - ( meL.y - object.y );
-	}
-
 // Chages the direction of the image
 function angleOf( object ) {
 	if ( ( 38 in object.keysDown || 87 in object.keysDown ) &&
@@ -210,7 +194,6 @@ function angleOf( object ) {
 	else if ( 37 in object.keysDown || 65 in object.keysDown ) { // Player holding left
 		return 180;
 		}
-	else return 0;
 	}
 
 // CSS for rotation
