@@ -12,6 +12,9 @@ bg.Image.onload = function () {
 	bg.Ready = true;
 	};
 bg.Image.src = "images/background.png";
+bg.angle = function( angle ){
+	bg.Image.src = "images/background"+angle+".png";
+	}
 
 // GameL objects
 var monstersCaught = 0;
@@ -40,8 +43,8 @@ addEventListener("keyup", function (e) {
 
 // Reset the gameL when the player catches a monster
 function reset() {
-	meL.x = canvas.width / 2;
-	meL.y = canvas.height / 2;
+	//meL.x = canvas.width / 2;
+	//meL.y = canvas.height / 2;
 	newMonster();
 	};
 
@@ -53,6 +56,7 @@ function newMonster(){
 
 // Update game objects
 function update(modifier) {
+	// Move me
 	if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
 		meL.y -= meL.speed * modifier;
 		}
@@ -66,6 +70,24 @@ function update(modifier) {
 		meL.x += meL.speed * modifier;
 		}
 
+	// Apply my shift on other objects
+	for ( var i in game.playersL ){
+		var player = game.playersL[i];
+		if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
+			player.y += meL.speed * modifier;
+			}
+		if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
+			player.y -= meL.speed * modifier;
+			}
+		if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
+			player.x += meL.speed * modifier;
+			}
+		if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
+			player.x -= meL.speed * modifier;
+			}
+		}
+
+	// Move the other players based on their keys
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
 		if ( 38 in player.keysDown || 87 in player.keysDown ) { // Player holding up
@@ -93,6 +115,7 @@ function update(modifier) {
 	};
 
 // Draw everything
+var angle = angleOf(meL);
 function render() {
 	// Score
 	ctx.fillStyle = "rgb(250, 250, 250)";
@@ -103,22 +126,28 @@ function render() {
 	ctx.font = "10px Helvetica";
 
 	if (bg.Ready) {
-		ctx.drawImage(bg.Image, 0, 0);
+/*		if ( angle != angleOf(meL) ){
+			angle = angleOf(meL);
+			bg.angle( angle );
+*/			ctx.drawImage(bg.Image, 0, 0);
+//			}
 		}
 
 	if (meL.Ready) {
-		ctx.drawImage(meL.Image, meL.x, meL.y);
-		ctx.fillText(meL.username, meL.x-5, meL.y-16);
+		//ctx.drawImage(meL.Image, canvas.width/2 , canvas.height/2 );
+		drawRotatedImage( meL.Image, canvas.width/2, canvas.height/2 , angleOf(meL) ); 
+		//ctx.fillText(meL.username, meL.x-5, meL.y-16);
 		}
 
 	if (monster.Ready) {
-		ctx.drawImage(monster.Image, monster.x, monster.y);
+		//ctx.drawImage(monster.Image, monster.x, monster.y);
 		}
 
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
 		if ( player.Ready ) {
-			ctx.drawImage(player.Image, player.x, player.y);
+			//ctx.drawImage(player.Image, player.x, player.y);
+			drawRotatedImage( player.Image, player.x, player.y, angleOf(player) ); 
 			ctx.fillText(player.username, player.x-5, player.y-16);
 			}	
 		}
@@ -147,6 +176,63 @@ game.main = function() {
 	// Request to do this again ASAP
 	requestAnimationFrame( game.main );
 	};
+
+// Turns server cordinates into local cordinates
+function translate( object ) {
+	object.x = canvas.width/2 - ( meL.x - object.x );
+	object.y = canvas.height/2 - ( meL.y - object.y );
+	}
+
+// Chages the direction of the image
+function angleOf( object ) {
+	if ( ( 38 in object.keysDown || 87 in object.keysDown ) &&
+		( 39 in object.keysDown || 68 in object.keysDown ) ) { // Player holding up and right
+		return 315;
+		}
+	else if ( ( 38 in object.keysDown || 87 in object.keysDown ) &&
+		( 37 in object.keysDown || 65 in object.keysDown ) ) { // Player holding up and left
+		return 225;
+		}
+	else if ( ( 37 in object.keysDown || 65 in object.keysDown ) &&
+		( 40 in object.keysDown || 83 in object.keysDown ) ) { // Player holding left and down
+		return 135;
+		}
+	else if ( ( 40 in object.keysDown || 83 in object.keysDown ) &&
+		( 39 in object.keysDown || 68 in object.keysDown ) ) {// Player holding down and right
+		return 45;
+		}
+	else if ( 38 in object.keysDown || 87 in object.keysDown ) { // Player holding up
+		return 270;
+		}
+	else if ( 40 in object.keysDown || 83 in object.keysDown ) { // Player holding down
+		return 90;
+		}
+	else if ( 37 in object.keysDown || 65 in object.keysDown ) { // Player holding left
+		return 180;
+		}
+	else return 0;
+	}
+
+// CSS for rotation
+function drawRotatedImage(image, x, y, angle) { 
+	// save the current co-ordinate system 
+	// before we screw with it
+	ctx.save(); 
+
+	// move to the middle of where we want to draw our image
+	ctx.translate(x, y);
+
+	// rotate around that point, converting our 
+	// angle from degrees to radians 
+	ctx.rotate(angle * (Math.PI/180) );
+
+	// draw it up and to the left by half the width
+	// and height of the image 
+	ctx.drawImage(image, -(image.width/2), -(image.height/2));
+
+	// and restore the co-ords to how they were when we began
+	ctx.restore(); 
+	}
 
 // Cross-browser support for requestAnimationFrameL
 var w = window;
