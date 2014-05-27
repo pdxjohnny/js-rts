@@ -6,9 +6,6 @@ bg.Image.onload = function () {
 	bg.Ready = true;
 	};
 bg.Image.src = "images/stars1.png";
-bg.angle = function( angle ){
-	bg.Image.src = "images/background"+angle+".png";
-	}
 
 // GameL objects
 var monstersCaught = 0;
@@ -35,6 +32,20 @@ addEventListener("keyup", function (e) {
 	delete meL.keysDown[e.keyCode];
 	}, false);
 
+canvas.addEventListener('click', function(evt) {
+	meL.des = getMousePos(canvas, evt);
+	console.log(meL.des.x, meL.des.y);
+	//if ( collision( meL.des,  )
+	}, false);
+
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+		x: evt.clientX - rect.left,
+		y: evt.clientY - rect.top
+		};
+	}
+
 // Reset the gameL when the player catches a monster
 function reset() {
 	//meL.x = canvas.width / 2;
@@ -52,32 +63,32 @@ function newMonster(){
 function update(modifier) {
 	// Move me
 	if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
-		meL.y -= meL.speed * modifier;
+		meL.y -= meL.ship.stats.speed * modifier;
 		}
 	if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
-		meL.y += meL.speed * modifier;
+		meL.y += meL.ship.stats.speed * modifier;
 		}
 	if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
-		meL.x -= meL.speed * modifier;
+		meL.x -= meL.ship.stats.speed * modifier;
 		}
 	if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
-		meL.x += meL.speed * modifier;
+		meL.x += meL.ship.stats.speed * modifier;
 		}
 
 	// Apply my shift on other objects
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
 		if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
-			player.y += meL.speed * modifier;
+			player.y += meL.ship.stats.speed * modifier;
 			}
 		if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
-			player.y -= meL.speed * modifier;
+			player.y -= meL.ship.stats.speed * modifier;
 			}
 		if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
-			player.x += meL.speed * modifier;
+			player.x += meL.ship.stats.speed * modifier;
 			}
 		if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
-			player.x -= meL.speed * modifier;
+			player.x -= meL.ship.stats.speed * modifier;
 			}
 		}
 
@@ -85,59 +96,47 @@ function update(modifier) {
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
 		if ( 38 in player.keysDown || 87 in player.keysDown ) { // Player holding up
-			player.y -= player.speed * modifier;
+			player.y -= player.ship.stats.speed * modifier;
 			}
 		if ( 40 in player.keysDown || 83 in player.keysDown ) { // Player holding down
-			player.y += player.speed * modifier;
+			player.y += player.ship.stats.speed * modifier;
 			}
 		if ( 37 in player.keysDown || 65 in player.keysDown ) { // Player holding left
-			player.x -= player.speed * modifier;
+			player.x -= player.ship.stats.speed * modifier;
 			}
 		if ( 39 in player.keysDown || 68 in player.keysDown ) { // Player holding right
-			player.x += player.speed * modifier;
+			player.x += player.ship.stats.speed * modifier;
 			}
 		}
 
 	// Are they touching?
-	if ( meL.x <= (monster.x + 32) &&
+/*	if ( meL.x <= (monster.x + 32) &&
 		monster.x <= (meL.x + 32) &&
 		meL.y <= (monster.y + 32) &&
 		monster.y <= (meL.y + 32) ) {
 			monstersCaught++;
 			reset();
 			}
-	};
+*/	};
 
 // Draw everything
-var angle = angleOf(meL);
 function render() {
-	// Score
-	ctx.fillStyle = "rgb(250, 250, 250)";
-	ctx.font = "24px Helvetica";
-	//ctx.fillText("Monsters caught: " + monstersCaught, 32, 32);
-	ctx.font = "10px Helvetica";
-
 	if (bg.Ready) {
-		//ctx.rect(0, 0, canvas.width, canvas.height);
-		//ctx.fillStyle = ctx.createPattern(bg.Image, "repeat");
 		ctx.fillStyle="#2C2C2C";
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		}
 
 	ctx.fillStyle = "white";
-	if (meL.Ready) {
-		drawRotatedImage( meL.Image, canvas.width/2, canvas.height/2 , angleOf(meL) ); 
+	ctx.font = "10px Helvetica";
+	if (meL.ship.Image.Ready) {
+		drawRotatedImage( meL.ship.Image, canvas.width/2, canvas.height/2 , angleOf(meL) ); 
 		ctx.fillText(meL.username, (canvas.width/2)-25, (canvas.height/2)-25);
-		}
-
-	if (monster.Ready) {
-		//ctx.drawImage(monster.Image, monster.x, monster.y);
 		}
 
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
-		if ( player.Ready ) {
-			drawRotatedImage( player.Image, player.x, player.y, angleOf(player) ); 
+		if ( player.ship.Image.Ready ) {
+			drawRotatedImage( player.ship.Image, player.x, player.y, angleOf(player) ); 
 			ctx.fillText(player.username, player.x-25, player.y-25);
 			}	
 		}

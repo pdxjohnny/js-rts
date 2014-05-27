@@ -3,6 +3,8 @@
 	<title>Game</title>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="objectConversions.js"></script>
+	<script src="ships.js"></script>
+	<script src="shipStats.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
@@ -104,12 +106,6 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 $('#login').on("submit", function (e) {
 	e.preventDefault();
 	meL.username = $('#name').val();
-	meL.Ready = false;
-	meL.Image = new Image();
-	meL.Image.onload = function () {
-		meL.Ready = true;
-		};
-	meL.Image.src = meL.pic;
 	then = Date.now();
 	reset();
 	game.main();
