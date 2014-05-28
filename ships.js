@@ -7,8 +7,10 @@ function getShip( aid, name, type, image, stats ){
 		}
 	}
 
-function getType( ship, type ){
-	if ( type === "basic" ) ship.stats = basic;
+function getStats( type ){
+	for ( var i in stats ){
+		if ( type === stats[i].name ) return new stats[i]();
+		}
 	//if ( type === "balenced" ) ship.stats = balenced;
 	//if ( type === "advanced" ) ship.stats = advanced;
 	}
@@ -20,7 +22,7 @@ var ships = {
 			this.type = "upgaded";
 			this.stats = stats;
 			}
-		else this.type = getType( this, type );
+		else this.stats = getStats( type );
 		this.Image = new Image();
 		this.Image.onload = function () {
 			this.Ready = true;
@@ -36,7 +38,7 @@ var ships = {
 			this.type = "upgaded";
 			this.stats = stats;
 			}
-		else this.type = getType( this, type );
+		else this.stats = getStats( type );
 		this.Image = new Image();
 		this.Image.onload = function () {
 			this.Ready = true;
@@ -56,7 +58,7 @@ var structures = {
 			this.type = "upgaded";
 			this.stats = stats;
 			}
-		else this.type = getType( this, type );
+		else this.stats = getStats( type );
 		this.Image = new Image();
 		this.Image.onload = function () {
 			this.Ready = true;

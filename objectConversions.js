@@ -35,7 +35,8 @@ function localObject( id, username, aid, x, y, image, type, stats ){
 	this.angle = 0;
 	this.traveling = true;
 	this.travel = function travel(){
-		travelTo( this.des, this );
+		var angle = travelTo( this.des, this );
+		if ( angle >= 0 && angle <= 360 ) this.angle = angle;
 		};
 	this.selected = false;
 	this.pic = image;
@@ -175,6 +176,7 @@ function travelTo( point, traveler, special ){
 		var deltx = point.x - traveler.x;
 		var delty = point.y - traveler.y;
 		var theta = Math.atan( delty/deltx );
+		traveler.angle = theta * (180/Math.PI);
 		var yspeed = traveler.ship.stats.speed * Math.sin( theta );
 		var xspeed = traveler.ship.stats.speed * Math.cos( theta );
 		if ( point.x >= traveler.x ) {
@@ -184,7 +186,9 @@ function travelTo( point, traveler, special ){
 		else if ( point.x <= traveler.x ){
 			traveler.x -= xspeed * modifier;
 			traveler.y -= yspeed * modifier;
+			traveler.angle += 180;
 			}
+		return traveler.angle;
 		}
 	else return false;
 	}

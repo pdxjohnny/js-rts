@@ -66,7 +66,12 @@ function selectStructure(evt) {
 				}
 			}
 		}
-	if ( none ) $('#bottomLeft').html("");
+	if ( none ) {
+		for ( var i in game.structuresL ){
+			game.structuresL[i].selected = false;
+			}
+		$('#bottomLeft').html("");
+		}
 	displaySelected();
 	}
 
@@ -266,8 +271,8 @@ function render() {
 	ctx.font = "10px Helvetica";
 	for ( var i in meL.units ){
 		var unit = meL.units[i];
-		if ( unit.ship.Image.Ready ) { 
-			unit.angle = angleOf( unit );
+		if ( Object.keys( unit.keysDown ).length > 0 ) unit.angle = angleOf(unit);
+		if ( unit.ship.Image.Ready ) {
 			if ( unit.aid === meL.occupied.aid ) {
 				drawRotatedImage( unit.ship.Image, canvas.width/2, 
 					canvas.height/2, unit.angle );
@@ -286,7 +291,7 @@ function render() {
 	for ( var i in game.structuresL ){
 		var struct = game.structuresL[i];
 		if ( struct.ship.Image.Ready ) {
-			drawRotatedImage( struct.ship.Image, struct.x, struct.y, angleOf(struct) ); 
+			drawRotatedImage( struct.ship.Image, struct.x, struct.y, struct.angle ); 
 			ctx.fillText(struct.username, struct.x-25, struct.y-25 );
 			if ( struct.selected ) {
 				drawRotatedRect( struct, "#33CC33" );
@@ -296,7 +301,7 @@ function render() {
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
 		if ( player.ship.Image.Ready ) {
-			drawRotatedImage( player.ship.Image, player.x, player.y, angleOf(player) ); 
+			drawRotatedImage( player.ship.Image, player.x, player.y, player.angle ); 
 			ctx.fillText(player.username, player.x-25, player.y-25 );
 			}
 		}
@@ -379,7 +384,7 @@ function drawRotatedImage(image, x, y, angle) {
 
 function drawRotatedRect( object, color ) {
 	ctx.save(); 
-	ctx.rotate( object.angle );
+	//ctx.rotate( object.angle );
 	ctx.beginPath();
 	ctx.rect(object.x-object.ship.Image.width/2, object.y-object.ship.Image.height/2, 
 		object.ship.Image.width, object.ship.Image.height );
