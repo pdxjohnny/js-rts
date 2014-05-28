@@ -5,14 +5,15 @@
 	<script src="objectConversions.js"></script>
 	<script src="ships.js"></script>
 	<script src="shipStats.js"></script>
+	<script src="ui.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
-<div style="position: absolute; left: 10px; top: 10px; width:200px; height:100px;">
+<div style="position: absolute;" oncontextmenu="return false;" >
         <canvas id="gameWindow" ></canvas>
 </div>
 
-<div id="topLeft" style="position: absolute; z-index: 1; left: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;">
+<div id="topLeft" style="position: absolute; z-index: 1; left: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" >
 
 <form id="login" action="" >
 	Username: <input id="name" type="text" ></input>
@@ -22,23 +23,28 @@
 
 players:<br>
 <div id="players" ></div>
-
-</div><div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;">
 </div>
 
-<script>
-// Globals
-var game = new Object;
-game.playersL = [];
-game.playersS = [];
-var meL = new localPlayer( 0, "", 0, 0, "images/shipblue.png" );
-var meS;
+<div id="topRight" style="position: absolute; z-index: 1; right: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
 
+<div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
+
+<div id="bottomRight" style="position: absolute; z-index: 1; right: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
+
+<script>
 // Create the canvas
 var canvas = document.getElementById('gameWindow');
 var ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+// Globals
+var game = new Object;
+game.playersL = [];
+game.playersS = [];
+var meL = new player( 0, "", canvas.width/2, canvas.height/2, "images/shipblue.png" );
+var meS;
+var modifier;
 
 // No Scroll
 $("html").css("overflow", "hidden");
@@ -52,7 +58,7 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 		
 	socket = io.connect('http://pdxjohnny.tk:443');
 
-	$.getScript( "gameclient.js" );
+	// $.getScript( "gameclient.js" );
 
 	// Display user count on page
 	socket.on('users connected', function(number){
@@ -73,7 +79,7 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 		game.playersL = [];
 		for ( var i in game.playersS ){
 			var player = game.playersS[i];
-			game.playersL.push( ServertoLocal( player ) );
+			game.playersL.push( ServerObjecttoLocal( player ) );
 			}
 		$('#players').html("");
 		for ( var i in players ){
@@ -87,7 +93,7 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 	socket.on('update player', function(player){
 		// game.playersS = players;
 		if ( player.id !== meL.id ){
-			player = ServertoLocal( player );
+			player = ServerObjecttoLocal( player );
 			updatePlayerLocal( player );
 			$('#players').html("");
 			for ( var i in game.playersL ){
@@ -105,14 +111,16 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 
 $('#login').on("submit", function (e) {
 	e.preventDefault();
-	meL.username = $('#name').val();
+	meL.username.un = $('#name').val();
 	then = Date.now();
-	reset();
 	game.main();
 	game.running = true;
-	meS = new LocaltoSever( meL );
-	socket.emit('update player', meS );
+	for ( var i in meL.units ){
+		var unit = meL.units[i];
+		//socket.emit('update player', new LocalObjecttoSever( unit ) );	
+		}
 	return false;
 	});
 
 </script>
+<script src="gameclient.js"></script>

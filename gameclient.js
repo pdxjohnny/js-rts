@@ -32,17 +32,106 @@ addEventListener("keyup", function (e) {
 	delete meL.keysDown[e.keyCode];
 	}, false);
 
-canvas.addEventListener('click', function(evt) {
-	meL.des = getMousePos(canvas, evt);
-	console.log(meL.des.x, meL.des.y);
-	//if ( collision( meL.des,  )
-	}, false);
+function singleSelect(evt) {
+	var mouseAt = getMousePos(evt);
+	var none = true;
+	for ( var i in meL.units ){
+		if ( onCords( mouseAt, meL.units[i] ) ) {
+			if ( meL.units[i].selected ) {
+				meL.units[i].selected = false;
+				meL.units[i].des = {};
+				}
+			else {
+				meL.units[i].selected = true;
+				meL.units[i].des = meL.des;
+				none = false;
+				}
+			}
+		}
+	if ( none ) {
+		var atLeastOne = false;
+		for ( var i in meL.units ){
+			if ( meL.units[i].selected ) atLeastOne = true;
+			}
+		if ( atLeastOne ) {
+			meL.des = mouseAt;
+			for ( var i in meL.units ){
+				if ( meL.units[i].selected ) meL.units[i].des = meL.des;
+				}
+			}
+		else meL.des = {};
+		}
+	displaySelected();
+	}
 
-function getMousePos(canvas, evt) {
-	var rect = canvas.getBoundingClientRect();
+function unselectAll() {
+	for ( var i in meL.units ){
+		meL.units[i].selected = false;
+		// meL.units[i].des = {};
+		// meL.units[i].keysDown = {};
+		}
+	meL.des = {};
+	displaySelected();
+	}
+
+function multiSelect(e){
+	meL.selectBoxStart = getMousePos(e);
+	$(canvas).mousemove(function(e){
+		meL.selectBoxEnd = getMousePos(e);
+		});
+	$(canvas).mouseup(function(e){
+		for ( var i in meL.units ){
+			if ( inCords( meL.selectBoxStart, meL.selectBoxEnd, meL.units[i] ) ) {
+				if ( meL.units[i].selected ) {
+					meL.units[i].selected = false;
+					meL.units[i].des = {};
+					}
+				else {
+					meL.units[i].selected = true;
+					meL.units[i].des = meL.des;
+					}
+				}
+			}
+		displaySelected();
+		meL.selectBoxStart = false;
+		meL.selectBoxEnd = false;
+		return false; 
+		});
+	}
+
+$(canvas).mousedown(function(e){
+	switch (e.which) {
+		case 1:
+			singleSelect(e);
+			multiSelect(e);
+			break;
+		case 2:
+			console.log('Middle Mouse button pressed.');
+			break;
+		case 3:
+			unselectAll();
+			break;
+		default:
+			console.log('You have a strange Mouse!');
+		}
+	});
+
+function getMousePos(e) {
+    var x;
+    var y;
+    if (e.pageX || e.pageY) {
+      x = e.pageX;
+      y = e.pageY;
+    }
+    else {
+      x = e.clientX + document.body.scrollLeft +
+           document.documentElement.scrollLeft;
+      y = e.clientY + document.body.scrollTop +
+           document.documentElement.scrollTop;
+    }
 	return {
-		x: evt.clientX - rect.left,
-		y: evt.clientY - rect.top
+		x: x,
+		y: y
 		};
 	}
 
@@ -61,84 +150,135 @@ function newMonster(){
 
 // Update game objects
 function update(modifier) {
-	// Move me
-	if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
-		meL.y -= meL.ship.stats.speed * modifier;
-		}
-	if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
-		meL.y += meL.ship.stats.speed * modifier;
-		}
-	if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
-		meL.x -= meL.ship.stats.speed * modifier;
-		}
-	if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
-		meL.x += meL.ship.stats.speed * modifier;
+
+	// Move my occuoied object
+	if ( meL.occupied ) objectShift( meL.occupied, modifier );
+
+	// Apply my shift on my units
+	for ( var i in meL.units ){
+		if ( meL.occupied ) {
+			if ( meL.occupied.aid !== meL.units[i].aid ) 
+				playerShift( meL.units[i], modifier );
+			}
+		else {
+			objectShift( meL.units[i], modifier );
+			playerShift( meL.units[i], modifier );
+			}
 		}
 
 	// Apply my shift on other objects
 	for ( var i in game.playersL ){
-		var player = game.playersL[i];
-		if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
-			player.y += meL.ship.stats.speed * modifier;
-			}
-		if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
-			player.y -= meL.ship.stats.speed * modifier;
-			}
-		if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
-			player.x += meL.ship.stats.speed * modifier;
-			}
-		if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
-			player.x -= meL.ship.stats.speed * modifier;
-			}
+		playerShift( game.playersL[i], modifier );
 		}
 
 	// Move the other players based on their keys
 	for ( var i in game.playersL ){
-		var player = game.playersL[i];
-		if ( 38 in player.keysDown || 87 in player.keysDown ) { // Player holding up
-			player.y -= player.ship.stats.speed * modifier;
-			}
-		if ( 40 in player.keysDown || 83 in player.keysDown ) { // Player holding down
-			player.y += player.ship.stats.speed * modifier;
-			}
-		if ( 37 in player.keysDown || 65 in player.keysDown ) { // Player holding left
-			player.x -= player.ship.stats.speed * modifier;
-			}
-		if ( 39 in player.keysDown || 68 in player.keysDown ) { // Player holding right
-			player.x += player.ship.stats.speed * modifier;
+		objectShift( game.playersL[i], modifier );
+		}
+	}
+
+function onCords( cords, object ){
+	if ( cords.x >= (object.x - object.ship.Image.width) &&
+		cords.x <= (object.x + object.ship.Image.width) &&
+		cords.y >= (object.y - object.ship.Image.height) &&
+		cords.y <= (object.y + object.ship.Image.height) ) {
+			return true;
+		}
+	else return false;
+	}
+
+function inCords( start, end, object ){
+	if ( start && end ) {
+		if ( start.x <= object.x &&
+			start.y <= object.y &&
+			end.x >= object.x &&
+			end.y >= object.y ) {
+				return true;
 			}
 		}
+	else return false;
+	}
 
-	// Are they touching?
-/*	if ( meL.x <= (monster.x + 32) &&
-		monster.x <= (meL.x + 32) &&
-		meL.y <= (monster.y + 32) &&
-		monster.y <= (meL.y + 32) ) {
-			monstersCaught++;
-			reset();
+function playerShift( object, modifier ){
+	if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
+		object.y += meL.speed * modifier;
+		}
+	if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
+		object.y -= meL.speed * modifier;
+		}
+	if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
+		object.x += meL.speed * modifier;
+		}
+	if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
+		object.x -= meL.speed * modifier;
+		}
+	if ( typeof object.des !== "undefined" ) {
+		if ( object.des.x && object.des.y ) {
+			playerShift( object.des, modifier );
 			}
-*/	};
+		}
+	}
+
+function objectShift( object, modifier ){
+	if ( object.des.x && object.des.y ) object.travel();
+	else {
+		if ( 38 in object.keysDown || 87 in object.keysDown ) { // Player holding up
+			object.y -= object.speed * modifier;
+			}
+		if ( 40 in object.keysDown || 83 in object.keysDown ) { // Player holding down
+			object.y += object.speed * modifier;
+			}
+		if ( 37 in object.keysDown || 65 in object.keysDown ) { // Player holding left
+			object.x += object.speed * modifier;
+			}
+		if ( 39 in object.keysDown || 68 in object.keysDown ) { // Player holding right
+			object.x -= object.speed * modifier;
+			}
+		}
+	}
 
 // Draw everything
 function render() {
-	if (bg.Ready) {
-		ctx.fillStyle="#2C2C2C";
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	ctx.fillStyle="#2C2C2C";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	if ( meL.selectBoxStart && meL.selectBoxEnd ) {
+		ctx.globalAlpha=0.2;
+		ctx.fillStyle="#33CC33";
+		ctx.fillRect(meL.selectBoxStart.x, meL.selectBoxStart.y, 
+			meL.selectBoxEnd.x-meL.selectBoxStart.x, 
+			meL.selectBoxEnd.y-meL.selectBoxStart.y);
+		ctx.globalAlpha=1;
 		}
 
 	ctx.fillStyle = "white";
 	ctx.font = "10px Helvetica";
-	if (meL.ship.Image.Ready) {
-		drawRotatedImage( meL.ship.Image, canvas.width/2, canvas.height/2 , angleOf(meL) ); 
-		ctx.fillText(meL.username, (canvas.width/2)-25, (canvas.height/2)-25);
+	for ( var i in meL.units ){
+		var unit = meL.units[i];
+		if ( unit.ship.Image.Ready ) { 
+			unit.angle = angleOf( unit );
+			if ( unit.aid === meL.occupied.aid ) {
+				drawRotatedImage( unit.ship.Image, canvas.width/2, 
+					canvas.height/2, unit.angle );
+				ctx.fillText(unit.username.un, canvas.width/2, canvas.height/2);
+				}
+			else {
+				drawRotatedImage( unit.ship.Image, unit.x, unit.y, unit.angle );
+				ctx.fillText(unit.username.un, unit.x-25, unit.y-25 );
+				}
+			if ( unit.selected ) {
+				drawRotatedRect( unit, "#33CC33" );
+				}
+			}	
 		}
 
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
 		if ( player.ship.Image.Ready ) {
 			drawRotatedImage( player.ship.Image, player.x, player.y, angleOf(player) ); 
-			ctx.fillText(player.username, player.x-25, player.y-25);
-			}	
+			ctx.fillText(player.username.un, player.x-25, player.y-25 );
+			}
 		}
 	};
 
@@ -149,15 +289,16 @@ game.main = function() {
 	if ( game.running ) {
 		var now = Date.now();
 		var delta = now - then;
-	
-		update(delta / 1000);
+		modifier = delta / 1000;
+
+		update(modifier);
 		render();
 	
 		then = now;
 	
 		if ( meS ) {
 			if( JSON.stringify(meL.keysDown) !== JSON.stringify(meS.keysDown) ) {
-				meS = new LocaltoSever( meL );
+				meS = new LocalObjecttoSever( meL );
 				socket.emit('update me', meS );
 				}
 			}
@@ -213,6 +354,18 @@ function drawRotatedImage(image, x, y, angle) {
 	ctx.drawImage(image, -(image.width/2), -(image.height/2));
 
 	// and restore the co-ords to how they were when we began
+	ctx.restore(); 
+	}
+
+function drawRotatedRect( object, color ) {
+	ctx.save(); 
+	ctx.rotate( object.angle );
+	ctx.beginPath();
+	ctx.rect(object.x-object.ship.Image.width/2, object.y-object.ship.Image.height/2, 
+		object.ship.Image.width, object.ship.Image.height );
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = color;
+	ctx.stroke();
 	ctx.restore(); 
 	}
 
