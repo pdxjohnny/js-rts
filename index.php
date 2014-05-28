@@ -1,7 +1,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Game</title>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 	<script src="objectConversions.js"></script>
 	<script src="ships.js"></script>
 	<script src="shipStats.js"></script>
@@ -21,8 +21,7 @@
 <!--	Password: <input id="name" type="text" ></input>-->
 </form>
 
-players:<br>
-<div id="players" ></div>
+<div id="online" ></div>
 </div>
 
 <div id="topRight" style="position: absolute; z-index: 1; right: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
@@ -37,6 +36,11 @@ var canvas = document.getElementById('gameWindow');
 var ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+$( window ).resize(function() {
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+	});
 
 // Globals
 var game = new Object;
@@ -81,9 +85,9 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 			var player = game.playersS[i];
 			game.playersL.push( ServerObjecttoLocal( player ) );
 			}
-		$('#players').html("");
+		$('#online').html("");
 		for ( var i in players ){
-			$('#players').append( "User: " + players[i].username + " is at ("
+			$('#online').append( "User: " + players[i].username + " is at ("
 				+Math.round(players[i].x)+","
 				+Math.round(players[i].y)+")<br>" );
 			}
@@ -95,9 +99,9 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 		if ( player.id !== meL.id ){
 			player = ServerObjecttoLocal( player );
 			updatePlayerLocal( player );
-			$('#players').html("");
+			$('#online').html("Players:<br>");
 			for ( var i in game.playersL ){
-				$('#players').append( "User: " + game.playersL[i].username
+				$('#online').append( "User: " + game.playersL[i].username
 				+" is at ("+Math.round(game.playersL[i].x)+","
 				+Math.round(game.playersL[i].y)+")<br>" );
 				}
@@ -106,9 +110,9 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 
 		})
 	.fail(function( jqxhr, settings, exception ) {
+		$('#online').html("Multiplayer Server Offline");
 		socket = false;
 	});
-
 $('#login').on("submit", function (e) {
 	e.preventDefault();
 	meL.username.un = $('#name').val();
@@ -119,6 +123,7 @@ $('#login').on("submit", function (e) {
 		var unit = meL.units[i];
 		//socket.emit('update player', new LocalObjecttoSever( unit ) );	
 		}
+	$('#login').hide();
 	return false;
 	});
 

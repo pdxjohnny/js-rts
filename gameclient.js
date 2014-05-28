@@ -299,7 +299,7 @@ game.main = function() {
 		if ( meS ) {
 			if( JSON.stringify(meL.keysDown) !== JSON.stringify(meS.keysDown) ) {
 				meS = new LocalObjecttoSever( meL );
-				socket.emit('update me', meS );
+				if( socket ) socket.emit('update me', meS );
 				}
 			}
 		}
