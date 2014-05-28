@@ -26,7 +26,7 @@
 
 <div id="topRight" style="position: absolute; z-index: 1; right: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
 
-<div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
+<div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;"  ></div>
 
 <div id="bottomRight" style="position: absolute; z-index: 1; right: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
 
@@ -46,6 +46,8 @@ $( window ).resize(function() {
 var game = new Object;
 game.playersL = [];
 game.playersS = [];
+game.structuresL = [ new localObject( 0, "merchant", 0, canvas.width/2, canvas.height/2, "images/structures/merchantBase.png", "merchantBase", "basic" ) ];
+game.structuresS = [];
 var meL = new player( 0, "", canvas.width/2, canvas.height/2, "images/shipblue.png" );
 var meS;
 var modifier;
@@ -113,6 +115,7 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 		$('#online').html("Multiplayer Server Offline");
 		socket = false;
 	});
+
 $('#login').on("submit", function (e) {
 	e.preventDefault();
 	meL.username.un = $('#name').val();

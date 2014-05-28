@@ -7,20 +7,6 @@ bg.Image.onload = function () {
 	};
 bg.Image.src = "images/stars1.png";
 
-// GameL objects
-var monstersCaught = 0;
-
-var monster = {
-	x: 0,
-	y: 0
-	};
-monster.Ready = false;
-monster.Image = new Image();
-monster.Image.onload = function () {
-	monster.Ready = true;
-	};
-monster.Image.src = "images/monster.png";
-
 // Handle keyboard controls
 // meL.keysDown = {};
 
@@ -170,6 +156,9 @@ function update(modifier) {
 	for ( var i in game.playersL ){
 		playerShift( game.playersL[i], modifier );
 		}
+	for ( var i in game.structuresL ){
+		playerShift( game.structuresL[i], modifier );
+		}
 
 	// Move the other players based on their keys
 	for ( var i in game.playersL ){
@@ -273,11 +262,18 @@ function render() {
 			}	
 		}
 
+	for ( var i in game.structuresL ){
+		var struct = game.structuresL[i];
+		if ( struct.ship.Image.Ready ) {
+			drawRotatedImage( struct.ship.Image, struct.x, struct.y, angleOf(struct) ); 
+			ctx.fillText(struct.username, struct.x-25, struct.y-25 );
+			}
+		}
 	for ( var i in game.playersL ){
 		var player = game.playersL[i];
 		if ( player.ship.Image.Ready ) {
 			drawRotatedImage( player.ship.Image, player.x, player.y, angleOf(player) ); 
-			ctx.fillText(player.username.un, player.x-25, player.y-25 );
+			ctx.fillText(player.username, player.x-25, player.y-25 );
 			}
 		}
 	};
