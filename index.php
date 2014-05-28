@@ -26,7 +26,7 @@
 
 <div id="topRight" style="position: absolute; z-index: 1; right: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
 
-<div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;"  ></div>
+<div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
 
 <div id="bottomRight" style="position: absolute; z-index: 1; right: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
 

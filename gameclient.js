@@ -27,7 +27,7 @@ function singleSelect(evt) {
 				meL.units[i].selected = false;
 				meL.units[i].des = {};
 				}
-			else {
+			else if ( none ) {
 				meL.units[i].selected = true;
 				meL.units[i].des = meL.des;
 				none = false;
@@ -47,6 +47,26 @@ function singleSelect(evt) {
 			}
 		else meL.des = {};
 		}
+	displaySelected();
+	}
+
+function selectStructure(evt) {
+	var mouseAt = getMousePos(evt);
+	var none = true;
+	for ( var i in game.structuresL ){
+		if ( onCords( mouseAt, game.structuresL[i] ) ) {
+			if ( game.structuresL[i].selected ) {
+				game.structuresL[i].selected = false;
+				$('#bottomLeft').html("");
+				}
+			else if ( none ) {
+				game.structuresL[i].selected = true;
+				game.structuresL[i].ship.options();
+				none = false;
+				}
+			}
+		}
+	if ( none ) $('#bottomLeft').html("");
 	displaySelected();
 	}
 
@@ -90,6 +110,7 @@ $(canvas).mousedown(function(e){
 		case 1:
 			singleSelect(e);
 			multiSelect(e);
+			selectStructure(e);
 			break;
 		case 2:
 			console.log('Middle Mouse button pressed.');
@@ -167,10 +188,10 @@ function update(modifier) {
 	}
 
 function onCords( cords, object ){
-	if ( cords.x >= (object.x - object.ship.Image.width) &&
-		cords.x <= (object.x + object.ship.Image.width) &&
-		cords.y >= (object.y - object.ship.Image.height) &&
-		cords.y <= (object.y + object.ship.Image.height) ) {
+	if ( cords.x >= (object.x - object.ship.Image.width/2) &&
+		cords.x <= (object.x + object.ship.Image.width/2) &&
+		cords.y >= (object.y - object.ship.Image.height/2) &&
+		cords.y <= (object.y + object.ship.Image.height/2) ) {
 			return true;
 		}
 	else return false;
@@ -267,6 +288,9 @@ function render() {
 		if ( struct.ship.Image.Ready ) {
 			drawRotatedImage( struct.ship.Image, struct.x, struct.y, angleOf(struct) ); 
 			ctx.fillText(struct.username, struct.x-25, struct.y-25 );
+			if ( struct.selected ) {
+				drawRotatedRect( struct, "#33CC33" );
+				}
 			}
 		}
 	for ( var i in game.playersL ){
