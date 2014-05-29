@@ -218,8 +218,21 @@ function overlaping( objectOne, objectTwo ){
 	}
 
 function inCords( start, end, object ){
-	if ( start && end ) {
-		if ( ( start.x <= (object.x - object.ship.Image.width/2) &&
+	if ( start && end && object ) {
+		if ( end.x < start.x && end.y < start.y ) return inCords( end, start, object );
+		else if ( end.x > start.x && end.y < start.y ) {
+			var temp = start.x;
+			start.x = end.x;
+			end.x = temp;
+			return inCords( start, end, object );
+			}
+		else if ( end.x < start.x && end.y > start.y ) {
+			var temp = start.y;
+			start.y = end.y;
+			end.y = temp;
+			return inCords( start, end, object );
+			}
+		else if ( ( start.x <= (object.x - object.ship.Image.width/2) &&
 			start.y <= (object.y - object.ship.Image.height/2) &&
 			end.x >= (object.x + object.ship.Image.width/2) &&
 			end.y >= (object.y + object.ship.Image.height/2) ) ||
