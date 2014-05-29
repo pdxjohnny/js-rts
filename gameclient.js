@@ -202,12 +202,31 @@ function onCords( cords, object ){
 	else return false;
 	}
 
+function overlaping( objectOne, objectTwo ){
+	objectOne.topLeft = {
+		x: (objectOne.x - objectOne.ship.Image.width/2),
+		y: (objectOne.y - objectOne.ship.Image.height/2)
+		};
+	objectOne.bottomRight = {
+		x: (objectOne.x + objectOne.ship.Image.width/2),
+		y: (objectOne.y + objectOne.ship.Image.height/2)
+		};
+	if ( inCords( objectOne.topLeft, objectOne.bottomRight, objectTwo ) ) {
+			return true;
+		}
+	else return false;
+	}
+
 function inCords( start, end, object ){
 	if ( start && end ) {
-		if ( start.x <= object.x &&
+		if ( ( start.x <= (object.x - object.ship.Image.width/2) &&
+			start.y <= (object.y - object.ship.Image.height/2) &&
+			end.x >= (object.x + object.ship.Image.width/2) &&
+			end.y >= (object.y + object.ship.Image.height/2) ) ||
+			( start.x <= object.x &&
 			start.y <= object.y &&
 			end.x >= object.x &&
-			end.y >= object.y ) {
+			end.y >= object.y ) ) {
 				return true;
 			}
 		}
@@ -215,23 +234,28 @@ function inCords( start, end, object ){
 	}
 
 function playerShift( object, modifier ){
-	if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
-		object.y += meL.speed * modifier;
-		}
-	if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
-		object.y -= meL.speed * modifier;
-		}
-	if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
-		object.x += meL.speed * modifier;
-		}
-	if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
-		object.x -= meL.speed * modifier;
-		}
-	if ( typeof object.des !== "undefined" ) {
-		if ( object.des.x && object.des.y ) {
-			playerShift( object.des, modifier );
+	if ( Object.keys(meL.keysDown).length > 0 ) {
+		if ( 38 in meL.keysDown || 87 in meL.keysDown ) { // Player holding up
+			object.y += meL.speed * modifier;
 			}
+		if ( 40 in meL.keysDown || 83 in meL.keysDown ) { // Player holding down
+			object.y -= meL.speed * modifier;
+			}
+		if ( 37 in meL.keysDown || 65 in meL.keysDown ) { // Player holding left
+			object.x += meL.speed * modifier;
+			}
+		if ( 39 in meL.keysDown || 68 in meL.keysDown ) { // Player holding right
+			object.x -= meL.speed * modifier;
+			}
+		if ( typeof object.des !== "undefined" ) {
+			if ( typeof object.des.x !== "undefined" &&
+				typeof object.des.y !== "undefined" ) {
+				playerShift( object.des, modifier );
+				}
+			}
+		return true;
 		}
+	else return false;
 	}
 
 function objectShift( object, modifier ){

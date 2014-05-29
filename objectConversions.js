@@ -5,8 +5,9 @@ function player( id, username, x, y, image ){
 	this.y = y;
 	this.keysDown = {};
 	this.des = {};
-	this.units = [ new localObject( this.id, this.username, 0,
-				x, y, "images/ships/fighterblue.png", "fighter", "basic" ) ];
+	this.units = [  ];
+	// new localObject( this.id, this.username, 0,
+	//			x, y, "images/ships/fighterblue.png", "fighter", "basic" )
 	this.occupied = false; //this.units[0];
 	this.occupy = function occupy( aid ){
 		for ( var i in this.units ){
@@ -18,6 +19,7 @@ function player( id, username, x, y, image ){
 		this.occupied = false;
 		};
 	this.speed = 256;
+	this.funds = 10000000;
 	this.centerOn = function centerOn( object ){
 		travelTo( object, this, modifier, "jumpto" );
 		};
@@ -36,7 +38,9 @@ function localObject( id, username, aid, x, y, image, type, stats ){
 	this.traveling = true;
 	this.travel = function travel(){
 		var angle = travelTo( this.des, this );
-		if ( angle >= 0 && angle <= 360 ) this.angle = angle;
+		if ( angle >= 0 && angle <= 360 && angle != true && angle != false ) {
+			this.angle = angle;
+			}
 		};
 	this.selected = false;
 	this.pic = image;

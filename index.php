@@ -24,6 +24,9 @@
 <div id="online" ></div>
 </div>
 
+
+<div id="topCenter" style="position: absolute; z-index: 1; left: 50%; margin: 0 auto; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
+
 <div id="topRight" style="position: absolute; z-index: 1; right: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
 
 <div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
@@ -122,6 +125,7 @@ $('#login').on("submit", function (e) {
 	then = Date.now();
 	game.main();
 	game.running = true;
+	displayFunds();
 	for ( var i in meL.units ){
 		var unit = meL.units[i];
 		//socket.emit('update player', new LocalObjecttoSever( unit ) );	

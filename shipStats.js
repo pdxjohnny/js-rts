@@ -5,4 +5,10 @@ var stats = {
 		this.power = 100;
 		this.sheilds = false;
 		},
+	advanced: function advanced(){
+		this.health = 300;
+		this.speed = 156;
+		this.power = 300;
+		this.sheilds = 100;
+		},
 	};

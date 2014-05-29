@@ -28,3 +28,11 @@ function displayOccupied(){
 		}
 	else $('#bottomLeft').html("");
 	}
+
+function displayFunds(){
+	if ( meL.funds ) {
+		$('#topCenter').html("Funds: "+meL.funds);
+		if ( meL.funds <= 0 ) $('#topCenter').html("You have no funds");
+		}
+	else $('#topCenter').html("You have no funds");
+	}
