@@ -29,7 +29,7 @@ var ships = {
 			};
 		this.Image.src = image;
 		this.options = function options(){
-			
+			$('#bottomLeft').html(this.name);
 			};
 		},
 	cruser: function cruser( type, image, stats ){
@@ -45,7 +45,7 @@ var ships = {
 			};
 		this.Image.src = image;
 		this.options = function options(){
-			
+			$('#bottomLeft').html(this.name);
 			};
 		},
 	}

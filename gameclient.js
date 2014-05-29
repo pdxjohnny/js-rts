@@ -26,10 +26,14 @@ function singleSelect(evt) {
 			if ( meL.units[i].selected ) {
 				meL.units[i].selected = false;
 				meL.units[i].des = {};
+				if ( typeof meL.units[i].ship.options !== "undefined" )
+					meL.units[i].ship.options();
 				}
 			else if ( none ) {
 				meL.units[i].selected = true;
-				meL.units[i].des = meL.des;
+				// meL.units[i].des = meL.des;
+				if ( typeof meL.units[i].ship.options !== "undefined" )
+					meL.units[i].ship.options();
 				none = false;
 				}
 			}
@@ -42,7 +46,10 @@ function singleSelect(evt) {
 		if ( atLeastOne ) {
 			meL.des = mouseAt;
 			for ( var i in meL.units ){
-				if ( meL.units[i].selected ) meL.units[i].des = meL.des;
+				if ( meL.units[i].selected ) {
+					meL.units[i].des = meL.des;
+					delete meL.units[i].path;
+					}
 				}
 			}
 		else meL.des = {};
@@ -70,7 +77,9 @@ function selectStructure(evt) {
 		for ( var i in game.structuresL ){
 			game.structuresL[i].selected = false;
 			}
-		$('#bottomLeft').html("");
+		//for ( var i in meL.units ){
+			//meL.units[i].selected = false;
+		//	}
 		}
 	displaySelected();
 	}
@@ -78,10 +87,12 @@ function selectStructure(evt) {
 function unselectAll() {
 	for ( var i in meL.units ){
 		meL.units[i].selected = false;
-		// meL.units[i].des = {};
-		// meL.units[i].keysDown = {};
+		}
+	for ( var i in game.structuresL ){
+		game.structuresL[i].selected = false;
 		}
 	meL.des = {};
+	$('#bottomLeft').html("");
 	displaySelected();
 	}
 
@@ -100,6 +111,7 @@ function multiSelect(e){
 				else {
 					meL.units[i].selected = true;
 					meL.units[i].des = meL.des;
+					delete meL.units[i].path;
 					}
 				}
 			}
@@ -113,6 +125,7 @@ function multiSelect(e){
 $(canvas).mousedown(function(e){
 	switch (e.which) {
 		case 1:
+			$('#bottomLeft').html("");
 			singleSelect(e);
 			multiSelect(e);
 			selectStructure(e);
@@ -425,7 +438,7 @@ function drawRotatedRect( object, color ) {
 	ctx.beginPath();
 	ctx.rect(object.x-object.ship.Image.width/2, object.y-object.ship.Image.height/2, 
 		object.ship.Image.width, object.ship.Image.height );
-	ctx.lineWidth = 2;
+	ctx.lineWidth = 1;
 	ctx.strokeStyle = color;
 	ctx.stroke();
 	ctx.restore(); 

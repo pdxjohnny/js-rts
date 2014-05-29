@@ -41,6 +41,7 @@ function localObject( id, username, aid, x, y, image, type, stats ){
 		if ( angle >= 0 && angle <= 360 && angle != true && angle != false ) {
 			this.angle = angle;
 			}
+		else if ( angle == false ) alternateCourse( this );
 		};
 	this.selected = false;
 	this.pic = image;
@@ -154,45 +155,4 @@ function translate( object ) {
 function reverseTranslate( object ) {
 	object.x = canvas.width/2 + ( meL.x + object.x );
 	object.y = canvas.height/2 + ( meL.y + object.y );
-	}
-
-function travelTo( point, traveler, special ){
-	if ( special === "jumpto" ){
-		traveler.x = point.x;
-		traveler.y = point.y;
-		return true;
-		}
-	else if ( inCords( { x: point.x - 4, y: point.y - 4 }, 
-			{ x: point.x + 4, y: point.y + 4 },  traveler ) ){
-				traveler.des = {};
-				if( traveler.ship.Image.src.indexOf("moving") > -1 ) {
-					traveler.ship.Image.src = traveler.ship.Image.src.replace(/moving.([^.]*)$/,'.'+'$1');
-					}
-				return true;
-				}
-	else if ( typeof traveler.y !== "undefined" &&
-			typeof point.y !== "undefined" &&
-			typeof traveler.x !== "undefined" &&
-			typeof point.x !== "undefined" ) {
-		if( traveler.ship.Image.src.indexOf("moving") < 0 ) {
-			traveler.ship.Image.src = traveler.ship.Image.src.replace(/.([^.]*)$/,'moving.'+'$1');
-			}
-		var deltx = point.x - traveler.x;
-		var delty = point.y - traveler.y;
-		var theta = Math.atan( delty/deltx );
-		traveler.angle = theta * (180/Math.PI);
-		var yspeed = traveler.ship.stats.speed * Math.sin( theta );
-		var xspeed = traveler.ship.stats.speed * Math.cos( theta );
-		if ( point.x >= traveler.x ) {
-			traveler.x += xspeed * modifier;
-			traveler.y += yspeed * modifier;
-			}
-		else if ( point.x <= traveler.x ){
-			traveler.x -= xspeed * modifier;
-			traveler.y -= yspeed * modifier;
-			traveler.angle += 180;
-			}
-		return traveler.angle;
-		}
-	else return false;
 	}

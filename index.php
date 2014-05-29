@@ -6,6 +6,7 @@
 	<script src="ships.js"></script>
 	<script src="shipStats.js"></script>
 	<script src="ui.js"></script>
+	<script src="movement.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
@@ -119,20 +120,25 @@ $.getScript( "http://pdxjohnny.tk:443/socket.io/socket.io.js" )
 		socket = false;
 	});
 
-$('#login').on("submit", function (e) {
-	e.preventDefault();
-	meL.username.un = $('#name').val();
-	then = Date.now();
-	game.main();
-	game.running = true;
-	displayFunds();
-	for ( var i in meL.units ){
-		var unit = meL.units[i];
-		//socket.emit('update player', new LocalObjecttoSever( unit ) );	
-		}
-	$('#login').hide();
-	return false;
+$.getScript( "gameclient.js" )
+	.done(function( script, textStatus ) {
+		then = Date.now();
+		game.main();
+		game.running = true;
+		meL.username.un = "TestUser";
+		$('#login').on("submit", function (e) {
+			e.preventDefault();
+			meL.username.un = $('#name').val();
+			displayFunds();
+			for ( var i in meL.units ){
+				var unit = meL.units[i];
+				//socket.emit('update player', new LocalObjecttoSever(unit) );	
+				}
+			$('#login').hide();
+			return false;
+			});
+		})
+	.fail(function( jqxhr, settings, exception ) {
 	});
-
+	
 </script>
-<script src="gameclient.js"></script>
