@@ -1,5 +1,6 @@
 function alternateCourse( object ){
-	// Exicute travelToDestination until it returns true
+	object.altCourseHits++;
+	var found = false;
 	var origTheta = object.angle;
 	var radius = object.ship.Image.width;
 	for ( var origTheta = object.angle, theta = origTheta; theta < origTheta + 360; theta++ ) {
@@ -22,17 +23,19 @@ function alternateCourse( object ){
 	}
 
 function travelTo( point, traveler, special ){
+	var mult = 4 + traveler.altCourseHits*4;
 	if ( special === "jumpto" ){
 		traveler.x = point.x;
 		traveler.y = point.y;
 		return true;
 		}
-	else if ( inCords( { x: point.x - 4, y: point.y - 4 }, 
-			{ x: point.x + 4, y: point.y + 4 },  traveler ) ){
+	else if ( inCords( { x: point.x - mult, y: point.y - mult }, 
+			{ x: point.x + mult, y: point.y + mult },  traveler ) ){
 				traveler.des = {};
 				if( traveler.ship.Image.src.indexOf("moving") > -1 ) {
 					traveler.ship.Image.src = traveler.ship.Image.src.replace(/moving.([^.]*)$/,'.'+'$1');
 					}
+				traveler.altCourseHits = 0;
 				return true;
 				}
 	else if ( typeof traveler.path !== "undefined" ) {

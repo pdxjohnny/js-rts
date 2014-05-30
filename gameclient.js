@@ -45,7 +45,10 @@ function singleSelect(evt) {
 		if ( atLeastOne ) {
 			meL.des = mouseAt;
 			for ( var i in meL.units ){
-				if ( meL.units[i].selected ) {
+				if ( meL.units[i].selected && 
+					typeof meL.des.x !== "undefined" &&
+					typeof meL.des.y !== "undefined" ) {
+					meL.units[i].des = {};
 					meL.units[i].des.x = meL.des.x;
 					meL.units[i].des.y = meL.des.y;
 					delete meL.units[i].path;
@@ -205,32 +208,44 @@ function update(modifier) {
 	}
 
 function onCords( cords, object ){
-	if ( cords.x >= (object.x - object.ship.Image.width/2) &&
-		cords.x <= (object.x + object.ship.Image.width/2) &&
-		cords.y >= (object.y - object.ship.Image.height/2) &&
-		cords.y <= (object.y + object.ship.Image.height/2) ) {
-			return true;
+	if ( typeof cords.x !== "undefined" && typeof cords.y !== "undefined" &&
+		typeof object.x !== "undefined" && typeof object.y !== "undefined" &&
+		typeof object.ship !== "undefined" ) {
+		if ( cords.x >= (object.x - object.ship.Image.width/2) &&
+			cords.x <= (object.x + object.ship.Image.width/2) &&
+			cords.y >= (object.y - object.ship.Image.height/2) &&
+			cords.y <= (object.y + object.ship.Image.height/2) ) {
+				return true;
+			}
 		}
 	else return false;
 	}
 
 function overlaping( objectOne, objectTwo ){
-	objectOne.topLeft = {
-		x: (objectOne.x - objectOne.ship.Image.width/2),
-		y: (objectOne.y - objectOne.ship.Image.height/2)
-		};
-	objectOne.bottomRight = {
-		x: (objectOne.x + objectOne.ship.Image.width/2),
-		y: (objectOne.y + objectOne.ship.Image.height/2)
-		};
-	if ( inCords( objectOne.topLeft, objectOne.bottomRight, objectTwo ) ) {
-		return true;
+	if ( typeof objectOne.x !== "undefined" && typeof objectOne.y !== "undefined" &&
+		typeof objectTwo.x !== "undefined" && typeof objectTwo.y !== "undefined" &&
+		typeof objectOne.ship !== "undefined" &&
+		typeof objectTwo.ship !== "undefined" ) {
+		objectOne.topLeft = {
+			x: (objectOne.x - objectOne.ship.Image.width/2),
+			y: (objectOne.y - objectOne.ship.Image.height/2)
+			};
+		objectOne.bottomRight = {
+			x: (objectOne.x + objectOne.ship.Image.width/2),
+			y: (objectOne.y + objectOne.ship.Image.height/2)
+			};
+		if ( inCords( objectOne.topLeft, objectOne.bottomRight, objectTwo ) ) {
+			return true;
+			}
 		}
 	else return false;
 	}
 
 function inCords( start, end, object ){
-	if ( start && end && object ) {
+	if ( typeof start.x !== "undefined" && typeof start.y !== "undefined" &&
+		typeof end.x !== "undefined" && typeof end.y !== "undefined" &&
+		typeof object.x !== "undefined" && typeof object.y !== "undefined" &&
+		typeof object.ship !== "undefined" ) {
 		if ( end.x < start.x && end.y < start.y ) return inCords( end, start, object );
 		else if ( end.x > start.x && end.y < start.y ) {
 			var temp = start.x;
@@ -289,8 +304,12 @@ function playerShift( object, modifier ){
 	else return false;
 	}
 
-function objectShift( object, modifier ){
-	if ( object.des.x && object.des.y ) object.travel();
+function objectShift( object, modifier ) {
+	if ( typeof object.des !== "undefined" ) {
+		if ( typeof object.des.x !== "undefined" && typeof object.des.y !== "undefined" ) {
+			object.travel();
+			}
+		}
 	else {
 		if ( 38 in object.keysDown || 87 in object.keysDown ) { // Player holding up
 			object.y -= object.speed * modifier;
@@ -376,10 +395,10 @@ game.main = function() {
 	
 		then = now;
 	
-		if ( meS ) {
+		if( socket ) {
 			if( JSON.stringify(meL.keysDown) !== JSON.stringify(meS.keysDown) ) {
 				meS = new LocalObjecttoSever( meL );
-				if( socket ) socket.emit('update me', meS );
+				socket.emit('update me', meS );
 				}
 			}
 		}

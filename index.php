@@ -125,7 +125,7 @@ $.getScript( "gameclient.js" )
 		then = Date.now();
 		game.main();
 		game.running = true;
-		meL.username.un = "TestUser";
+		meL.username.un = "";
 		$('#login').on("submit", function (e) {
 			e.preventDefault();
 			meL.username.un = $('#name').val();

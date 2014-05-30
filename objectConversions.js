@@ -36,6 +36,7 @@ function localObject( id, username, aid, x, y, image, type, stats ){
 	this.des = {};
 	this.angle = 0;
 	this.traveling = true;
+	this.altCourseHits = 0;
 	this.travel = function travel(){
 		var angle = travelTo( this.des, this );
 		if ( angle >= 0 && angle <= 360 && angle != true && angle != false ) {
