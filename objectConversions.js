@@ -19,7 +19,7 @@ function player( id, username, x, y, image ){
 		this.occupied = false;
 		};
 	this.speed = 256;
-	this.funds = 10000000;
+	this.funds = 10000;
 	this.centerOn = function centerOn( object ){
 		travelTo( object, this, modifier, "jumpto" );
 		};

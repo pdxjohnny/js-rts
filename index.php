@@ -1,6 +1,6 @@
 <head>
 	<meta charset="utf-8">
-	<title>Game</title>
+	<title>Javascript RTS</title>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 	<script src="objectConversions.js"></script>
 	<script src="ships.js"></script>
@@ -14,7 +14,7 @@
         <canvas id="gameWindow" ></canvas>
 </div>
 
-<div id="topLeft" style="position: absolute; z-index: 1; left: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" >
+<div id="topLeft" class="topLeft" oncontextmenu="return false;" >
 
 <form id="login" action="" >
 	Username: <input id="name" type="text" ></input>
@@ -23,16 +23,18 @@
 </form>
 
 <div id="online" ></div>
+<a href="mailto:johnandersenpdx@gmail.com?Subject=Bug%20Report" target="_top">Bugs and sugestions</a>
+<p onclick="meL.funds += 10000; displayFunds();" >More funds please</p>
 </div>
 
 
-<div id="topCenter" style="position: absolute; z-index: 1; left: 50%; margin: 0 auto; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
+<div id="topCenter" class="topCenter" oncontextmenu="return false;" ></div>
 
-<div id="topRight" style="position: absolute; z-index: 1; right: 20px; top: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
+<div id="topRight" class="topRight" oncontextmenu="return false;" ></div>
 
-<div id="bottomLeft" style="position: absolute; z-index: 1; left: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
+<div id="bottomLeft" class="bottomLeft" oncontextmenu="return false;" ></div>
 
-<div id="bottomRight" style="position: absolute; z-index: 1; right: 20px; bottom: 20px; background-color:rgba(0, 0, 0, 0.2); color: white;" oncontextmenu="return false;" ></div>
+<div id="bottomRight" class="bottomRight" oncontextmenu="return false;" ></div>
 
 <script>
 // Create the canvas
