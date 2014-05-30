@@ -31,7 +31,6 @@ function singleSelect(evt) {
 				}
 			else if ( none ) {
 				meL.units[i].selected = true;
-				// meL.units[i].des = meL.des;
 				if ( typeof meL.units[i].ship.options !== "undefined" )
 					meL.units[i].ship.options();
 				none = false;
@@ -47,7 +46,8 @@ function singleSelect(evt) {
 			meL.des = mouseAt;
 			for ( var i in meL.units ){
 				if ( meL.units[i].selected ) {
-					meL.units[i].des = meL.des;
+					meL.units[i].des.x = meL.des.x;
+					meL.units[i].des.y = meL.des.y;
 					delete meL.units[i].path;
 					}
 				}
@@ -110,7 +110,6 @@ function multiSelect(e){
 					}
 				else {
 					meL.units[i].selected = true;
-					meL.units[i].des = meL.des;
 					delete meL.units[i].path;
 					}
 				}
@@ -225,7 +224,7 @@ function overlaping( objectOne, objectTwo ){
 		y: (objectOne.y + objectOne.ship.Image.height/2)
 		};
 	if ( inCords( objectOne.topLeft, objectOne.bottomRight, objectTwo ) ) {
-			return true;
+		return true;
 		}
 	else return false;
 	}
@@ -277,6 +276,12 @@ function playerShift( object, modifier ){
 			if ( typeof object.des.x !== "undefined" &&
 				typeof object.des.y !== "undefined" ) {
 				playerShift( object.des, modifier );
+				}
+			}
+		if ( typeof object.path !== "undefined" ) {
+			if ( typeof object.path.x !== "undefined" &&
+				typeof object.path.y !== "undefined" ) {
+				playerShift( object.path, modifier );
 				}
 			}
 		return true;

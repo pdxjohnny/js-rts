@@ -1,15 +1,24 @@
 function alternateCourse( object ){
-	var deltx = object.des.x - object.x;
-	var delty = object.des.y - object.y;
-	var theta = Math.atan( delty/deltx );
-	object.angle = theta * (180/Math.PI);
-	var yspeed = object.ship.stats.speed * Math.sin( theta );
-	var xspeed = object.ship.stats.speed * Math.cos( theta );
-	object.path = {
-		x: 200,
-		y: 200
-		};
-	console.log("alternateCourse");
+	// Exicute travelToDestination until it returns true
+	var origTheta = object.angle;
+	var radius = object.ship.Image.width;
+	for ( var origTheta = object.angle, theta = origTheta; theta < origTheta + 360; theta++ ) {
+		var tempTheta = theta * (Math.PI/180);
+		var path = {
+			x: object.x + ( radius * Math.cos( tempTheta ) ),
+			y: object.y + ( radius * Math.sin( tempTheta ) )
+			};
+		if ( travelToDestination( path, object ) ){
+			found = true;
+			break;
+			}
+		}
+	if ( found ) {
+		object.path = path;
+		}
+	else {
+		delete object.des;
+		}
 	}
 
 function travelTo( point, traveler, special ){
