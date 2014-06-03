@@ -108,7 +108,6 @@ function multiSelect(e){
 		for ( var i in meL.units ){
 			if ( inCords( meL.selectBoxStart, meL.selectBoxEnd, meL.units[i] ) ) {
 				if ( meL.units[i].selected ) {
-					meL.units[i].selected = false;
 					meL.units[i].des = {};
 					}
 				else {
@@ -200,10 +199,16 @@ function update(modifier) {
 	for ( var i in game.structuresL ){
 		playerShift( game.structuresL[i], modifier );
 		}
+	for ( var i in game.opponents ){
+		playerShift( game.opponents[i], modifier );
+		}
 
 	// Move the other players based on their keys
 	for ( var i in game.playersL ){
 		objectShift( game.playersL[i], modifier );
+		}
+	for ( var i in game.opponents ){
+		objectShift( game.opponents[i], modifier );
 		}
 	}
 
@@ -305,6 +310,7 @@ function playerShift( object, modifier ){
 	}
 
 function objectShift( object, modifier ) {
+	object.ai();
 	if ( typeof object.des !== "undefined" ) {
 		if ( typeof object.des.x !== "undefined" && typeof object.des.y !== "undefined" ) {
 			object.travel();
@@ -359,13 +365,27 @@ function render() {
 			if ( unit.selected ) {
 				drawRotatedRect( unit, "#33CC33" );
 				}
+			if ( unit.targeted ) {
+				drawRotatedRect( unit, "yellow" );
+				}
 			}	
 		}
-
+	for ( var i in game.opponents ){
+		var op = game.opponents[i];
+		if ( op.ship.Image.Ready ) {
+			drawRotatedImage( op.ship.Image, op.x, op.y, op.angle ); 
+			ctx.fillStyle = 'red';
+			ctx.fillText(op.username.un, op.x-25, op.y-25 );
+			if ( op.targeted ) {
+				drawRotatedRect( op, "red" );
+				}
+			}
+		}
 	for ( var i in game.structuresL ){
 		var struct = game.structuresL[i];
 		if ( struct.ship.Image.Ready ) {
-			drawRotatedImage( struct.ship.Image, struct.x, struct.y, struct.angle ); 
+			drawRotatedImage( struct.ship.Image, struct.x, struct.y, struct.angle );  
+			ctx.fillStyle = '#33CC33';
 			ctx.fillText(struct.username, struct.x-25, struct.y-25 );
 			if ( struct.selected ) {
 				drawRotatedRect( struct, "#33CC33" );
@@ -392,6 +412,7 @@ game.main = function() {
 
 		update(modifier);
 		render();
+		opponents.chance();
 	
 		then = now;
 	

@@ -33,10 +33,45 @@ function localObject( id, username, aid, x, y, image, type, stats ){
 	this.y = y;
 	this.des = {};
 	this.keysDown = {};
-	this.des = {};
 	this.angle = 0;
 	this.traveling = true;
 	this.altCourseHits = 0;
+	this.targeted = false;
+	this.canFire = true;
+	this.ai = function ai(){
+		var near = nearMe( this.aid, this.username, this.x, this.y, this.ship.stats.range );
+		target( this, near );
+		if ( this.canFire && near ) fireOnTarget( near );
+		};
+	this.travel = function travel(){
+		var angle = travelTo( this.des, this );
+		if ( angle >= 0 && angle <= 360 && angle != true && angle != false ) {
+			this.angle = angle;
+			}
+		else if ( angle == false ) alternateCourse( this );
+		};
+	this.selected = false;
+	this.pic = image;
+	this.ship = new getShip( aid, type, stats, this.pic );
+	this.options = function options(){
+		this.ship.options();
+		};
+	}
+
+function weapon( username, aid, x, y, image, type, stats ){
+	this.id = id;
+	this.username = username;
+	this.aid = aid;
+	this.x = x;
+	this.y = y;
+	this.des = {};
+	this.keysDown = {};
+	this.angle = 0;
+	this.traveling = true;
+	this.altCourseHits = 0;
+	this.targeted = false;
+	this.ai = function ai(){
+		};
 	this.travel = function travel(){
 		var angle = travelTo( this.des, this );
 		if ( angle >= 0 && angle <= 360 && angle != true && angle != false ) {

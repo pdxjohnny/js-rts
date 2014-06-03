@@ -7,7 +7,10 @@
 	<script src="shipStats.js"></script>
 	<script src="ui.js"></script>
 	<script src="movement.js"></script>
+	<script src="opponents.js"></script>
+	<script src="ai.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
+	<meta name="viewport" content="width=device-width">
 </head>
 
 <div style="position: absolute;" oncontextmenu="return false;" >
@@ -54,7 +57,9 @@ game.playersL = [];
 game.playersS = [];
 game.structuresL = [ new localObject( 0, "merchant", 0, canvas.width/2, canvas.height/2, "images/structures/merchantBase.png", "merchantBase", "basic" ) ];
 game.structuresS = [];
-var meL = new player( 0, "", canvas.width/2, canvas.height/2, "images/shipblue.png" );
+game.opponents = [];
+game.weapons = [];
+var meL = new player( 0, "", 0, 0, "images/shipblue.png" );
 var meS;
 var modifier;
 

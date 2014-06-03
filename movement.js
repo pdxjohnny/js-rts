@@ -24,6 +24,9 @@ function alternateCourse( object ){
 
 function travelTo( point, traveler, special ){
 	var mult = 4 + traveler.altCourseHits*4;
+	if( traveler.ship.Image.src.indexOf("moving") > -1 ) {
+		traveler.ship.Image.src = traveler.ship.Image.src.replace(/moving.([^.]*)$/,'.'+'$1');
+		}
 	if ( special === "jumpto" ){
 		traveler.x = point.x;
 		traveler.y = point.y;
@@ -32,9 +35,6 @@ function travelTo( point, traveler, special ){
 	else if ( inCords( { x: point.x - mult, y: point.y - mult }, 
 			{ x: point.x + mult, y: point.y + mult },  traveler ) ){
 				traveler.des = {};
-				if( traveler.ship.Image.src.indexOf("moving") > -1 ) {
-					traveler.ship.Image.src = traveler.ship.Image.src.replace(/moving.([^.]*)$/,'.'+'$1');
-					}
 				traveler.altCourseHits = 0;
 				return true;
 				}
@@ -42,9 +42,6 @@ function travelTo( point, traveler, special ){
 		if ( inCords( { x: traveler.path.x - 4, y: traveler.path.y - 4 }, 
 			{ x: traveler.path.x + 4, y: traveler.path.y + 4 },  traveler ) ){
 				delete traveler.path;
-				if( traveler.ship.Image.src.indexOf("moving") > -1 ) {
-					traveler.ship.Image.src = traveler.ship.Image.src.replace(/moving.([^.]*)$/,'.'+'$1');
-					}
 				return true;
 				}
 			else return travelOnPath( traveler );
@@ -67,7 +64,7 @@ function travelOnPath( traveler ) {
 		}
 	}
 
-function travelToDestination( point, traveler ) {
+function travelToDestination( point, traveler, weapon ) {
 	if( traveler.ship.Image.src.indexOf("moving") < 0 ) {
 		traveler.ship.Image.src = traveler.ship.Image.src.replace(/.([^.]*)$/,'moving.'+'$1');
 		}
@@ -92,15 +89,35 @@ function travelToDestination( point, traveler ) {
 		}
 	newPosition.ship = traveler.ship;
 	var noCollision = true;
+	var hit;
 	for ( var i in game.playersL ){
-		if ( overlaping( game.playersL[i], newPosition ) ) noCollision = false;
+		if ( game.playersL[i].aid != traveler.aid ) {
+			if ( overlaping( game.playersL[i], newPosition ) ) {
+				noCollision = false;
+				hit = game.playersL[i];
+				break;
+				}
+			}
+		}
+	for ( var i in game.opponents ){
+		if ( game.opponents[i].aid != traveler.aid ) {
+			if ( overlaping( game.opponents[i], newPosition ) ) {
+				noCollision = false;
+				hit = game.opponents[i];
+				break;
+				}
+			}
 		}
 	for ( var i in game.structuresL ){
 	//	if ( overlaping( game.structuresL[i], newPosition ) ) noCollision = false;
 		}
 	for ( var i in meL.units ){
 		if ( meL.units[i].aid != traveler.aid ) {
-			if ( overlaping( meL.units[i], newPosition ) ) noCollision = false;
+			if ( overlaping( meL.units[i], newPosition ) ) {
+				noCollision = false;
+				hit = meL.units[i];
+				break;
+				}
 			}
 		}
 	if ( noCollision ) {
@@ -108,5 +125,6 @@ function travelToDestination( point, traveler ) {
 		traveler.y = newPosition.y;
 		return traveler.angle;
 		}
+	else if ( weapon ) doDamage( weapon, hit );
 	else return false;
 	}
