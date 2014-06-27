@@ -365,8 +365,8 @@ function render() {
 			if ( unit.selected ) {
 				drawRotatedRect( unit, "#33CC33" );
 				}
-			if ( unit.targeted ) {
-				drawRotatedRect( unit, "yellow" );
+			if ( unit.target ) {
+				drawRotatedRect( unit.target, "red" );
 				}
 			}	
 		}
@@ -376,9 +376,15 @@ function render() {
 			drawRotatedImage( op.ship.Image, op.x, op.y, op.angle ); 
 			ctx.fillStyle = 'red';
 			ctx.fillText(op.username.un, op.x-25, op.y-25 );
-			if ( op.targeted ) {
-				drawRotatedRect( op, "red" );
+			if ( op.target ) {
+				drawRotatedRect( op.target, "yellow" );
 				}
+			}
+		}
+	for ( var i in game.weapons ){
+		var weapon = game.weapons[i];
+		if ( weapon.ship.Image.Ready ) {
+			drawRotatedImage( weapon.ship.Image, weapon.x, weapon.y, weapon.angle ); 
 			}
 		}
 	for ( var i in game.structuresL ){
